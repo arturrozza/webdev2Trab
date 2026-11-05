@@ -1,9 +1,21 @@
 import { Hono } from "hono"
-import { tarefasRoutes } from "./routes/tarefas"
+import { routes } from "./routes"
+
+import paginaLogin from "../public/index.html"
+import paginaHome from "../public/home.html"
 
 const app = new Hono()
+app.route("/", routes)
 
-app.get("/", (c) => c.json({ status: "ok" }))
-app.route("/tarefas", tarefasRoutes)
+// Igual ao exemplo da aula: o Bun serve as páginas HTML
+// e o que não for página cai no Hono (API).
+const server = Bun.serve({
+    port: Number(process.env.PORT ?? 3000),
+    routes: {
+        "/": paginaLogin,
+        "/home": paginaHome,
+    },
+    fetch: app.fetch,
+})
 
-export default app
+console.log(`Servidor rodando em ${server.url}`)

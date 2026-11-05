@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FocusFlow</title>
+  <link rel="stylesheet" href="./auth.css">
+</head>
+<body>
+  <main class="painel">
+    <h1>Olá, <span id="nome">…</span></h1>
+    <p class="subtitulo" id="email"></p>
+    <p>Aqui vai entrar o app do FocusFlow (passo 4).</p>
+    <button class="botao" id="sair">Sair</button>
+  </main>
+
+  <script>
+    async function iniciar() {
+      const resposta = await fetch("/auth/me")
+      if (!resposta.ok) return (location.href = "/")
+      const usuario = await resposta.json()
+      document.querySelector("#nome").textContent = usuario.nome
+      document.querySelector("#email").textContent = usuario.email
+    }
+
+    document.querySelector("#sair").addEventListener("click", async () => {
+      await fetch("/auth/logout", { method: "POST" })
+      location.href = "/"
+    })
+
+    iniciar()
+  </script>
+</body>
+</html>

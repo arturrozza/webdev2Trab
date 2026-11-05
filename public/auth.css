@@ -1,0 +1,90 @@
+/* Tokens copiados do FocusFlow (css/variables.css) */
+:root {
+  --bg: #000000;
+  --surface: #1c160c;
+  --surface-alt: #2b2214;
+  --text: #f0ead6;
+  --muted: #9c8f74;
+  --accent: #d4af37;
+  --accent-strong: #e3c25f;
+  --accent-soft: rgba(212, 175, 55, 0.15);
+  --danger: #b5533f;
+  --danger-soft: rgba(181, 83, 63, 0.15);
+  --border: rgba(240, 234, 214, 0.08);
+  --border-strong: rgba(240, 234, 214, 0.16);
+  --font-body: "Inter", "Segoe UI", sans-serif;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+.painel {
+  width: 100%;
+  max-width: 380px;
+  padding: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+h1 { margin: 0 0 4px; font-size: 1.6rem; }
+.subtitulo { margin: 0 0 24px; color: var(--muted); }
+
+.abas { display: flex; gap: 8px; margin-bottom: 20px; }
+.abas button {
+  flex: 1;
+  padding: 8px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+}
+.abas button[aria-selected="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+form { display: flex; flex-direction: column; gap: 12px; }
+form[hidden] { display: none; }
+
+input {
+  padding: 10px 12px;
+  background: var(--surface-alt);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+}
+input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.botao {
+  padding: 10px;
+  background: var(--accent);
+  color: #000;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.botao:hover { background: var(--accent-strong); }
+.botao:disabled { opacity: 0.6; cursor: wait; }
+
+.mensagem { min-height: 1.2em; margin: 12px 0 0; font-size: 0.9rem; }
+.mensagem.erro { color: var(--danger); }
+.mensagem.ok { color: var(--accent); }

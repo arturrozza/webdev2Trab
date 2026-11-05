@@ -45,6 +45,9 @@ export const updateOne = async (c: Context) => {
     return c.json(tarefa)
 }
 
-
-
-
+export const deleteOne = (c: Context) => {
+    const query = db.query(`DELETE FROM tarefas WHERE id=:id`)
+    const resultado = query.run({ ":id": Number(c.req.param("id")) })
+    if (resultado.changes === 0) return c.json({ erro: "Not found" }, 404)
+    return c.body(null, 204)
+}

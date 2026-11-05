@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FocusFlow — Entrar</title>
+  <link rel="stylesheet" href="./auth.css">
+</head>
+<body>
+  <main class="painel">
+    <h1>🍅 FocusFlow</h1>
+    <p class="subtitulo">Tarefas e foco, num lugar só.</p>
+
+    <div class="abas" role="tablist">
+      <button type="button" role="tab" data-aba="login" aria-selected="true">Entrar</button>
+      <button type="button" role="tab" data-aba="cadastro" aria-selected="false">Criar conta</button>
+    </div>
+
+    <form id="form-login">
+      <input required type="email" name="email" placeholder="email" autocomplete="email">
+      <input required type="password" name="senha" placeholder="senha" autocomplete="current-password">
+      <button class="botao">Entrar</button>
+    </form>
+
+    <form id="form-cadastro" hidden>
+      <input required minlength="2" type="text" name="nome" placeholder="nome" autocomplete="name">
+      <input required type="email" name="email" placeholder="email" autocomplete="email">
+      <input required minlength="6" type="password" name="senha" placeholder="senha (mín. 6)" autocomplete="new-password">
+      <input required minlength="6" type="password" name="confirmar" placeholder="confirmar senha" autocomplete="new-password">
+      <button class="botao">Criar conta</button>
+    </form>
+
+    <p class="mensagem" id="mensagem" role="status"></p>
+  </main>
+
+  <script>
+    const formLogin = document.querySelector("#form-login")
+    const formCadastro = document.querySelector("#form-cadastro")
+    const mensagem = document.querySelector("#mensagem")
+
+    function mostrar(texto, tipo = "erro") {
+      mensagem.textContent = texto
+      mensagem.className = `mensagem ${tipo}`
+    }
+
+    function trocarAba(aba) {
+      document.querySelectorAll("[data-aba]").forEach((b) =>
+        b.setAttribute("aria-selected", String(b.dataset.aba === aba)))
+      formLogin.hidden = aba !== "login"
+      formCadastro.hidden = aba !== "cadastro"
+      mostrar("")
+    }
+
+    document.querySelectorAll("[data-aba]").forEach((b) =>
+      b.addEventListener("click", () => trocarAba(b.dataset.aba)))
+
+    async function enviar(url, dados) {
+      const resposta = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados),
+      })
+      const corpo = await resposta.json().catch(() => ({}))
+      return { ok: resposta.ok, corpo }
+    }
+
+    // Se já estiver logado, vai direto pra home
+    fetch("/auth/me").then((r) => { if (r.ok) location.href = "/home" })
+
+    formLogin.addEventListener("submit", async (e) => {
+      e.preventDefault()
+      const { ok, corpo } = await enviar("/auth/login", {
+        email: formLogin.email.value,
+        senha: formLogin.senha.value,
+      })
+      if (ok) return (location.href = "/home")
+      mostrar(corpo.erro ?? "erro ao entrar")
+    })
+
+    formCadastro.addEventListener("submit", async (e) => {
+      e.preventDefault()
+      if (formCadastro.senha.value !== formCadastro.confirmar.value)
+        return mostrar("as senhas não conferem")
+
+      const email = formCadastro.email.value
+      const { ok, corpo } = await enviar("/usuarios", {
+        nome: formCadastro.nome.value,
+        email,
+        senha: formCadastro.senha.value,
+      })
+      if (!ok) return mostrar(corpo.erro ?? "erro ao cadastrar")
+
+      formCadastro.reset()
+      trocarAba("login")
+      formLogin.email.value = email
+      formLogin.senha.focus()
+      mostrar("conta criada! agora é só entrar.", "ok")
+    })
+  </script>
+</body>
+</html>
