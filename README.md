@@ -1,15 +1,18 @@
-# webdev2trab
+# FocusFlow — API + Web
 
-To install dependencies:
+Evolução do FocusFlow (organizador de tarefas com Pomodoro) com back-end em Bun + Hono + SQLite.
+
+## Como rodar
 
 ```bash
 bun install
+bun run dev      # modo desenvolvimento (reinicia ao salvar)
+# ou
+bun run start    # sem watch
 ```
 
-To run:
+Depois abra http://localhost:3000
 
-```bash
-bun run index.ts
-```
+Para usar outra porta: `PORT=4000 bun run dev`
 
-This project was created using `bun init` in bun v1.3.14. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+O banco `focusflow.db` é criado automaticamente na primeira execução.
