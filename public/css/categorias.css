@@ -1,0 +1,188 @@
+/* Partes novas da versão com back-end: menu do usuário, categorias e avisos de erro.
+   Segue os mesmos tokens de variables.css. */
+
+/* ---------- Menu do usuário (topbar) ---------- */
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 13px;
+}
+
+.user-name {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.user-logout {
+  color: var(--muted);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.user-logout:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* ---------- Categorias (sidebar) ---------- */
+
+.categorias {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.categorias h2 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-3);
+}
+
+.categoria-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.categoria-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.categoria-item:hover {
+  background: var(--surface-alt);
+}
+
+.categoria-nome {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categoria-total {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.categoria-vazia {
+  font-size: 12px;
+  color: var(--muted-soft);
+  padding: var(--space-1) var(--space-2);
+}
+
+.categoria-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cat, var(--accent));
+  flex-shrink: 0;
+}
+
+.categoria-form {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.categoria-form .task-input {
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: 13px;
+}
+
+.categoria-form .ctrl-btn {
+  flex: 0 0 40px;
+  padding: 0;
+}
+
+.categoria-form .task-input {
+  flex: 1;
+}
+
+.categoria-cor {
+  width: 36px;
+  flex-shrink: 0;
+  padding: 2px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+/* ---------- Categoria na tarefa e nos filtros ---------- */
+
+.task-cat {
+  font-size: 11px;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  color: var(--cat, var(--accent));
+  border: 1px solid color-mix(in srgb, var(--cat, var(--accent)) 40%, transparent);
+  background: color-mix(in srgb, var(--cat, var(--accent)) 12%, transparent);
+  white-space: nowrap;
+}
+
+.categoria-filters {
+  flex-wrap: wrap;
+  margin-top: calc(-1 * var(--space-3));
+}
+
+.categoria-filters[hidden] {
+  display: none;
+}
+
+.categoria-filters .filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ---------- Aviso de erro ---------- */
+
+.toast {
+  position: fixed;
+  bottom: var(--space-5);
+  left: 50%;
+  transform: translate(-50%, 20px);
+  max-width: calc(100% - 32px);
+  padding: var(--space-3) var(--space-5);
+  background: var(--surface-alt);
+  color: var(--text);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-panel);
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 520px) {
+  .user-menu {
+    margin-left: auto;
+  }
+
+  .badge-ext {
+    display: none;
+  }
+}

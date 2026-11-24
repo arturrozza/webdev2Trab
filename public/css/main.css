@@ -1,0 +1,11 @@
+/* Ponto de entrada do CSS do app.
+   Um único <link> com @import garante a ORDEM dos arquivos no bundle do Bun
+   (com vários <link> separados, o responsive.css acabava antes do layout.css
+   e o layout de celular não funcionava). A ordem importa: responsive.css por último. */
+@import "./reset.css";
+@import "./variables.css";
+@import "./layout.css";
+@import "./timer.css";
+@import "./tasks.css";
+@import "./categorias.css";
+@import "./responsive.css";

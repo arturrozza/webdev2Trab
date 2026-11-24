@@ -1,34 +1,141 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FocusFlow</title>
-  <link rel="stylesheet" href="./auth.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FocusFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍅</text></svg>">
+<link rel="stylesheet" href="./css/main.css">
 </head>
 <body>
-  <main class="painel">
-    <h1>Olá, <span id="nome">…</span></h1>
-    <p class="subtitulo" id="email"></p>
-    <p>Aqui vai entrar o app do FocusFlow (passo 4).</p>
-    <button class="botao" id="sair">Sair</button>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="logo"><span>Focus</span>Flow</div>
+    <div class="tagline">Tarefas & Pomodoro</div>
+    <div class="badge-ext" title="Cadastre sites na extensão FocusFlow para bloqueá-los automaticamente durante o modo Foco.">
+      <span class="dot"></span> Extensão de Bloqueio
+    </div>
+    <div class="user-menu">
+      <span class="user-name" id="user-name"></span>
+      <button class="user-logout" id="btn-logout">Sair</button>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+
+    <div class="focus-header">
+      <h2>Timer</h2>
+      <select id="timer-preset" class="timer-preset-select">
+        <option value="classic">Clássico — 25 / 5 / 15</option>
+        <option value="method5217">52/17 — foco prolongado</option>
+        <option value="method9020">90/20 — foco profundo</option>
+      </select>
+      <div class="mode-pills">
+        <button class="mode-pill active" data-mode="focus">Foco</button>
+        <button class="mode-pill" data-mode="short">Pausa</button>
+        <button class="mode-pill" data-mode="long">Longa</button>
+      </div>
+    </div>
+
+    <div class="clock-wrap">
+      <div class="clock-ring">
+        <svg class="clock-svg" viewBox="0 0 180 180">
+          <circle class="clock-track" cx="90" cy="90" r="80"/>
+          <circle class="clock-prog" id="clock-prog" cx="90" cy="90" r="80"
+            stroke-dasharray="502.65"
+            stroke-dashoffset="0"/>
+        </svg>
+        <div class="clock-center">
+          <div class="clock-time" id="clock-time">25:00</div>
+          <div class="clock-label" id="clock-label">FOCO</div>
+        </div>
+      </div>
+
+      <div class="active-task" id="active-task">
+        <span class="active-task-dot"></span>
+        <span id="active-task-name">Nenhuma tarefa selecionada</span>
+      </div>
+
+      <div class="timer-controls">
+        <button class="ctrl-btn primary" id="btn-start">▶ Iniciar</button>
+        <button class="ctrl-btn" id="btn-reset">↺ Reset</button>
+      </div>
+
+      <div class="cycles-row">
+        <span class="section-label">Ciclos</span>
+        <div class="cycles-dots" id="cycles-dots"></div>
+        <span style="font-size:11px;color:var(--muted);font-family:var(--mono);" id="cycle-count">0 / 4</span>
+      </div>
+    </div>
+
+    <section class="categorias">
+      <h2>Categorias</h2>
+      <ul class="categoria-list" id="categoria-list"></ul>
+      <form class="categoria-form" id="categoria-form">
+        <input type="color" id="categoria-cor" class="categoria-cor" value="#d4af37" aria-label="Cor da categoria">
+        <input type="text" id="categoria-nome" class="task-input" placeholder="Nova categoria" maxlength="50" required autocomplete="off">
+        <button type="submit" class="ctrl-btn" aria-label="Criar categoria">+</button>
+      </form>
+    </section>
+  </aside>
+
+  <main class="content">
+
+    <section class="tasks-header">
+      <h2>Minhas Tarefas</h2>
+      <div class="tasks-stats">
+        <span id="tasks-pending-count">0 pendentes</span>
+        <span id="tasks-done-count">0 concluídas</span>
+      </div>
+    </section>
+
+    <form class="task-form" id="task-form">
+      <input
+        type="text"
+        id="task-input"
+        class="task-input"
+        placeholder="O que você precisa fazer?"
+        autocomplete="off"
+        maxlength="200"
+        required
+      >
+      <select id="task-priority" class="task-priority" aria-label="Prioridade">
+        <option value="low">Baixa</option>
+        <option value="medium" selected>Média</option>
+        <option value="high">Alta</option>
+      </select>
+      <select id="task-categoria" class="task-priority" aria-label="Categoria">
+        <option value="">Sem categoria</option>
+      </select>
+      <button type="submit" class="ctrl-btn primary">+ Adicionar</button>
+    </form>
+
+    <div class="tasks-filters">
+      <button class="filter-pill active" data-filter="all">Todas</button>
+      <button class="filter-pill" data-filter="pending">Pendentes</button>
+      <button class="filter-pill" data-filter="done">Concluídas</button>
+    </div>
+
+    <!-- render.js gera as pílulas de categoria aqui -->
+    <div class="tasks-filters categoria-filters" id="categoria-filters" hidden></div>
+
+    <ul class="task-list" id="task-list">
+      <!-- render.js insere os <li class="task-item"> aqui -->
+    </ul>
+
+    <p class="task-empty" id="task-empty"></p>
+
   </main>
 
-  <script>
-    async function iniciar() {
-      const resposta = await fetch("/auth/me")
-      if (!resposta.ok) return (location.href = "/")
-      const usuario = await resposta.json()
-      document.querySelector("#nome").textContent = usuario.nome
-      document.querySelector("#email").textContent = usuario.email
-    }
+</div>
 
-    document.querySelector("#sair").addEventListener("click", async () => {
-      await fetch("/auth/logout", { method: "POST" })
-      location.href = "/"
-    })
+<div class="toast" id="toast" role="alert"></div>
 
-    iniciar()
-  </script>
+<script type="module" src="./js/app.js"></script>
 </body>
 </html>
