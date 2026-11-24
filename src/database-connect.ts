@@ -24,16 +24,43 @@ db.run(`
     )
 `)
 
+// Cada usuário tem as próprias categorias; o nome não se repete para o mesmo usuário.
 db.run(`
-    CREATE TABLE IF NOT EXISTS tarefas (
+    CREATE TABLE IF NOT EXISTS categorias (
         id         INTEGER PRIMARY KEY AUTOINCREMENT,
         usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
-        titulo     TEXT NOT NULL,
-        prioridade TEXT NOT NULL DEFAULT 'medium'
-                   CHECK (prioridade IN ('low', 'medium', 'high')),
-        concluida  INTEGER NOT NULL DEFAULT 0 CHECK (concluida IN (0, 1)),
-        criado_em  TEXT NOT NULL DEFAULT (datetime('now'))
+        nome       TEXT NOT NULL,
+        cor        TEXT NOT NULL DEFAULT '#d4af37',
+        criado_em  TEXT NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (usuario_id, nome)
     )
 `)
 
+// Apagar uma categoria não apaga as tarefas: elas só ficam sem categoria (SET NULL).
+db.run(`
+    CREATE TABLE IF NOT EXISTS tarefas (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        usuario_id   INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+        categoria_id INTEGER REFERENCES categorias(id) ON DELETE SET NULL,
+        titulo       TEXT NOT NULL,
+        prioridade   TEXT NOT NULL DEFAULT 'medium'
+                     CHECK (prioridade IN ('low', 'medium', 'high')),
+        concluida    INTEGER NOT NULL DEFAULT 0 CHECK (concluida IN (0, 1)),
+        criado_em    TEXT NOT NULL DEFAULT (datetime('now'))
+    )
+`)
+
+// Migração: bancos criados antes das categorias não têm a coluna categoria_id.
+// O CREATE TABLE IF NOT EXISTS não altera tabela existente, então adicionamos na mão.
+function colunaExiste(tabela: string, coluna: string) {
+    const colunas = db.query(`PRAGMA table_info(${tabela})`).all() as { name: string }[]
+    return colunas.some((c) => c.name === coluna)
+}
+
+if (!colunaExiste("tarefas", "categoria_id"))
+    db.run(`ALTER TABLE tarefas ADD COLUMN categoria_id INTEGER
+            REFERENCES categorias(id) ON DELETE SET NULL`)
+
+db.run(`CREATE INDEX IF NOT EXISTS idx_categorias_usuario ON categorias(usuario_id)`)
 db.run(`CREATE INDEX IF NOT EXISTS idx_tarefas_usuario ON tarefas(usuario_id)`)
+db.run(`CREATE INDEX IF NOT EXISTS idx_tarefas_categoria ON tarefas(categoria_id)`)
