@@ -61,6 +61,22 @@ if (!colunaExiste("tarefas", "categoria_id"))
     db.run(`ALTER TABLE tarefas ADD COLUMN categoria_id INTEGER
             REFERENCES categorias(id) ON DELETE SET NULL`)
 
+// Cada ciclo do timer que chega ao fim vira uma linha aqui (foco, pausa ou pausa longa).
+// tarefa_id é a tarefa que estava "em foco" no timer; se ela for apagada,
+// a sessão continua contando nas estatísticas, só perde o vínculo (SET NULL).
+db.run(`
+    CREATE TABLE IF NOT EXISTS sessoes_pomodoro (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        usuario_id   INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+        tarefa_id    INTEGER REFERENCES tarefas(id) ON DELETE SET NULL,
+        modo         TEXT NOT NULL CHECK (modo IN ('focus', 'short', 'long')),
+        duracao_seg  INTEGER NOT NULL CHECK (duracao_seg > 0),
+        concluida_em TEXT NOT NULL DEFAULT (datetime('now'))
+    )
+`)
+
 db.run(`CREATE INDEX IF NOT EXISTS idx_categorias_usuario ON categorias(usuario_id)`)
+db.run(`CREATE INDEX IF NOT EXISTS idx_sessoes_usuario_data ON sessoes_pomodoro(usuario_id, concluida_em)`)
+db.run(`CREATE INDEX IF NOT EXISTS idx_sessoes_tarefa ON sessoes_pomodoro(tarefa_id)`)
 db.run(`CREATE INDEX IF NOT EXISTS idx_tarefas_usuario ON tarefas(usuario_id)`)
 db.run(`CREATE INDEX IF NOT EXISTS idx_tarefas_categoria ON tarefas(categoria_id)`)

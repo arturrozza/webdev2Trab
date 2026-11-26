@@ -1,0 +1,206 @@
+/* Painel "Seu foco": números do dia, gráfico da semana e tarefas com mais foco. */
+
+.estatisticas {
+  margin-top: var(--space-7);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border);
+}
+
+.estatisticas h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-5);
+}
+
+.estatisticas h3 {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: var(--space-4);
+}
+
+/* ---------- Números (stat tiles) ---------- */
+
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.stat-valor {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-rotulo {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stat-bloco {
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-3);
+}
+
+/* ---------- Gráfico da semana ---------- */
+
+.grafico-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  height: 160px;
+  /* linha de base */
+  background: linear-gradient(var(--border-strong), var(--border-strong)) bottom 22px left 0 / 100% 1px no-repeat;
+}
+
+.barra-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  outline: none;
+  cursor: default;
+}
+
+.barra-area {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 4px 4px 0 0;
+  transition: background 0.15s var(--ease);
+}
+
+/* faixa de hover maior que a barra, pra ser fácil de mirar */
+.barra-col:hover .barra-area,
+.barra-col:focus-visible .barra-area {
+  background: var(--accent-soft);
+}
+
+.barra {
+  width: min(28px, 70%);
+  min-height: 0;
+  background: var(--accent);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s var(--ease);
+}
+
+/* dia sem foco: só um traço na base, para não parecer dado faltando */
+.barra.vazia {
+  height: 2px !important;
+  background: var(--muted-soft);
+  border-radius: 1px;
+}
+
+.barra-dia {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--muted);
+  height: 14px;
+  line-height: 14px;
+}
+
+.barra-col.hoje .barra-dia {
+  color: var(--text);
+}
+
+/* tooltip */
+.barra-col::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% - 8px);
+  left: 50%;
+  transform: translate(-50%, 4px);
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface-alt);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s var(--ease), transform 0.15s var(--ease);
+  z-index: 1;
+}
+
+.barra-col:hover::after,
+.barra-col:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ---------- Top tarefas ---------- */
+
+.top-tarefas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.top-tarefas li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 13px;
+}
+
+.top-titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-valor {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.top-vazio {
+  color: var(--muted-soft);
+  font-size: 13px;
+}
+
+/* ---------- Contador na tarefa ---------- */
+
+.task-pomodoros {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .stat-tiles {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-tile:last-child {
+    grid-column: span 2;
+  }
+}

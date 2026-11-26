@@ -12,6 +12,7 @@ export const state = {
   filter: 'all',        // 'all' | 'pending' | 'done'
   categoriaFiltro: 'all', // 'all' | 'none' | id da categoria
   activeTaskId: null,   // tarefa em foco no timer
+  estatisticas: null,   // resumo vindo de /sessoes/estatisticas
 };
 
 // ---------- pub/sub ----------
@@ -50,9 +51,31 @@ function action(fn) {
 
 // ---------- Carregamento inicial ----------
 export const initState = action(async () => {
-  const [tarefas, categorias] = await Promise.all([api.getTarefas(), api.getCategorias()]);
+  const [tarefas, categorias, estatisticas] = await Promise.all([
+    api.getTarefas(), api.getCategorias(), api.getEstatisticas(),
+  ]);
   state.tarefas = tarefas;
   state.categorias = categorias;
+  state.estatisticas = estatisticas;
+  notify();
+});
+
+// ---------- Sessões do Pomodoro ----------
+/**
+ * Chamado pelo timer sempre que um ciclo chega ao fim.
+ * Salva a sessão vinculada à tarefa em foco (se houver) e atualiza as estatísticas.
+ */
+export const registrarSessao = action(async (modo, duracao_seg) => {
+  const tarefa_id = state.activeTaskId;
+  await api.createSessao({ modo, duracao_seg, tarefa_id });
+
+  if (modo === 'focus' && tarefa_id !== null) {
+    const tarefa = state.tarefas.find((t) => t.id === tarefa_id);
+    if (tarefa) tarefa.pomodoros += 1;
+  }
+
+  // As estatísticas são calculadas no servidor (GROUP BY), então buscamos de novo
+  state.estatisticas = await api.getEstatisticas();
   notify();
 });
 

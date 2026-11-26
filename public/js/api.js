@@ -42,3 +42,7 @@ export const deleteTarefa = (id) => request('DELETE', `/tarefas/${id}`);
 export const getCategorias = () => request('GET', '/categorias');
 export const createCategoria = (dados) => request('POST', '/categorias', dados);
 export const deleteCategoria = (id) => request('DELETE', `/categorias/${id}`);
+
+// ---------- Sessões do Pomodoro ----------
+export const createSessao = (dados) => request('POST', '/sessoes', dados);
+export const getEstatisticas = () => request('GET', '/sessoes/estatisticas');

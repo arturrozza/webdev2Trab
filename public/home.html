@@ -130,6 +130,35 @@
 
     <p class="task-empty" id="task-empty"></p>
 
+    <section class="estatisticas" aria-labelledby="titulo-estatisticas">
+      <h2 id="titulo-estatisticas">Seu foco</h2>
+
+      <div class="stat-tiles">
+        <div class="stat-tile">
+          <span class="stat-valor" id="stat-hoje">0 min</span>
+          <span class="stat-rotulo">de foco hoje</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-valor" id="stat-ciclos">0</span>
+          <span class="stat-rotulo">ciclos hoje</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-valor" id="stat-total">0 min</span>
+          <span class="stat-rotulo">de foco no total</span>
+        </div>
+      </div>
+
+      <div class="stat-bloco">
+        <h3>Minutos de foco — últimos 7 dias</h3>
+        <div class="grafico-semana" id="grafico-semana" role="list"></div>
+      </div>
+
+      <div class="stat-bloco">
+        <h3>Tarefas com mais foco</h3>
+        <ol class="top-tarefas" id="top-tarefas"></ol>
+      </div>
+    </section>
+
   </main>
 
 </div>

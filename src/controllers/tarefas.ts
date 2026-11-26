@@ -11,6 +11,7 @@ const tarefaId = (c: Context) => Number(c.req.param("id"))
 type TarefaDB = {
     id: number
     titulo: string
+    pomodoros: number
     prioridade: string
     concluida: number
     criado_em: string
@@ -27,6 +28,7 @@ const formatar = (t: TarefaDB) => ({
     prioridade: t.prioridade,
     concluida: t.concluida === 1,
     criado_em: t.criado_em,
+    pomodoros: t.pomodoros,
     categoria: t.categoria_id === null ? null
         : { id: t.categoria_id, nome: t.categoria_nome, cor: t.categoria_cor },
 })
@@ -34,7 +36,10 @@ const formatar = (t: TarefaDB) => ({
 // LEFT JOIN: tarefas sem categoria também aparecem (com categoria null)
 const SELECT_TAREFAS = `
     SELECT t.id, t.titulo, t.prioridade, t.concluida, t.criado_em,
-           c.id AS categoria_id, c.nome AS categoria_nome, c.cor AS categoria_cor
+           c.id AS categoria_id, c.nome AS categoria_nome, c.cor AS categoria_cor,
+           -- subconsulta: quantos ciclos de foco já foram feitos nesta tarefa
+           (SELECT COUNT(*) FROM sessoes_pomodoro s
+             WHERE s.tarefa_id = t.id AND s.modo = 'focus') AS pomodoros
     FROM tarefas t
     LEFT JOIN categorias c ON c.id = t.categoria_id
 `

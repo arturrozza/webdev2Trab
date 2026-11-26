@@ -5,7 +5,7 @@
 // de tarefas, já que são domínios independentes do app.
 
 import { qs, qsa, formatTime } from './utils.js';
-import { subscribe, getActiveTask } from './state.js';
+import { subscribe, getActiveTask, registrarSessao } from './state.js';
 import { requestNotificationPermission, sendNotification } from './notifications.js';
 
 const PRESETS = {
@@ -208,6 +208,10 @@ function tick() {
  */
 function handleModeComplete() {
   const finishedMode = timerState.mode;
+
+  // Salva o ciclo no banco (sessoes_pomodoro). Não precisa esperar a resposta:
+  // o timer segue para o próximo modo enquanto a API trabalha.
+  registrarSessao(finishedMode, currentPreset()[finishedMode]);
 
   if (finishedMode === 'focus') {
     timerState.cyclesCompleted += 1;

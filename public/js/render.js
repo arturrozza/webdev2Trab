@@ -9,6 +9,7 @@ export function render() {
   renderTasks();
   renderCounts();
   renderCategorias();
+  renderEstatisticas();
 }
 
 // ---------- Lista de tarefas ----------
@@ -37,9 +38,14 @@ function renderTasks() {
       ? `<span class="task-cat" style="--cat: ${escapeHtml(task.categoria.cor)}">${escapeHtml(task.categoria.nome)}</span>`
       : '';
 
+    const pomodoros = task.pomodoros > 0
+      ? `<span class="task-pomodoros" title="${task.pomodoros} ciclo(s) de foco nesta tarefa">🍅 ${task.pomodoros}</span>`
+      : '';
+
     li.innerHTML = `
       <button class="task-checkbox" data-action="toggle" aria-label="Marcar como concluída"></button>
       <span class="task-title">${escapeHtml(task.titulo)}</span>
+      ${pomodoros}
       ${categoria}
       <button class="task-focus" data-action="focus" aria-label="Focar nessa tarefa" title="Usar no timer">
         ${isActive ? '◉' : '○'}
@@ -117,6 +123,73 @@ function renderCategoriaFilters() {
     pill('all', 'Todas categorias') +
     state.categorias.map((c) => pill(c.id, c.nome, c.cor)).join('') +
     pill('none', 'Sem categoria');
+}
+
+// ---------- Estatísticas ----------
+
+/** 6120 -> "1h 42min", 1500 -> "25 min", 0 -> "0 min" */
+function formatDuracao(segundos) {
+  const min = Math.round(segundos / 60);
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60);
+  const resto = min % 60;
+  return resto ? `${h}h ${resto}min` : `${h}h`;
+}
+
+/** "2026-11-24" -> "ter" (dia da semana abreviado) */
+function diaSemana(dia) {
+  // meio-dia evita que o fuso horário empurre a data para o dia anterior
+  return new Date(`${dia}T12:00:00`)
+    .toLocaleDateString('pt-BR', { weekday: 'short' })
+    .replace('.', '');
+}
+
+function renderEstatisticas() {
+  const e = state.estatisticas;
+  if (!e) return;
+
+  qs('#stat-hoje').textContent = formatDuracao(e.hoje.segundos);
+  qs('#stat-ciclos').textContent = e.hoje.ciclos;
+  qs('#stat-total').textContent = formatDuracao(e.total.segundos);
+
+  renderGraficoSemana(e.ultimos7Dias);
+  renderTopTarefas(e.topTarefas);
+}
+
+// Gráfico de barras de série única (minutos de foco por dia).
+// Uma cor só, sem legenda (o título já diz o que é); o valor de cada
+// dia aparece no tooltip (hover/foco do teclado) e no aria-label.
+function renderGraficoSemana(dias) {
+  const grafico = qs('#grafico-semana');
+  const max = Math.max(...dias.map((d) => d.segundos), 1);
+  const hoje = dias[dias.length - 1].dia;
+
+  grafico.innerHTML = dias.map((d) => {
+    const altura = (d.segundos / max) * 100;
+    const texto = `${formatDuracao(d.segundos)} · ${d.ciclos} ciclo${d.ciclos === 1 ? '' : 's'}`;
+    const ehHoje = d.dia === hoje;
+    return `
+      <div class="barra-col${ehHoje ? ' hoje' : ''}" tabindex="0" role="listitem"
+           data-tip="${texto}" aria-label="${diaSemana(d.dia)}: ${texto}">
+        <div class="barra-area">
+          <div class="barra${d.segundos === 0 ? ' vazia' : ''}" style="height: ${altura}%"></div>
+        </div>
+        <span class="barra-dia">${ehHoje ? 'hoje' : diaSemana(d.dia)}</span>
+      </div>`;
+  }).join('');
+}
+
+function renderTopTarefas(tarefas) {
+  const lista = qs('#top-tarefas');
+  if (tarefas.length === 0) {
+    lista.innerHTML = '<li class="top-vazio">Selecione uma tarefa (○) e complete um ciclo de foco para ela aparecer aqui.</li>';
+    return;
+  }
+  lista.innerHTML = tarefas.map((t) => `
+    <li>
+      <span class="top-titulo">${escapeHtml(t.titulo)}</span>
+      <span class="top-valor">${formatDuracao(t.segundos)} · 🍅 ${t.ciclos}</span>
+    </li>`).join('');
 }
 
 // ---------- Mensagens de erro ----------
